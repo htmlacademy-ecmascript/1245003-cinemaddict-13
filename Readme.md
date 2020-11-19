@@ -1,7 +1,7 @@
 # Проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Вячеслав Саввиди](https://up.htmlacademy.ru/ecmascript/13/user/1245003).
-* Наставник: `Неизвестно`.
+* Наставник: [Иван Шалагин](https://htmlacademy.ru/profile/id386947).
 
 ---
 
