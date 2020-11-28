@@ -1,3 +1,3 @@
-export const createFooterStatistics = () => {
-  return `<p>0 movies inside</p>`;
+export const createFooterStatistics = (filmsCount) => {
+  return `<p>${filmsCount} movies inside</p>`;
 };
