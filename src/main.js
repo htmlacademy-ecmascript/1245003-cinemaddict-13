@@ -1,7 +1,10 @@
 import UserProfileView from './view/profile.js';
 import MainNavigationView from './view/navigation.js';
 import SortingView from './view/sorting.js';
-import FilmsListsView from './view/films-lists.js';
+import FilmsListMainView from './view/films-list-main.js';
+import FilmsListRatedView from './view/films-lists-rated.js';
+import FilmsListCommentedView from './view/films-list-commented.js';
+import FilmsListEmptyView from './view/films-list-empty';
 import ShowMoreButtonView from './view/show-more-button.js';
 import FilmCardView from './view/film-card.js';
 import FooterStatisticsView from './view/footer-stats.js';
@@ -23,10 +26,11 @@ const mainElement = bodyElement.querySelector(`.main`);
 const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 
 render(headerElement, new UserProfileView().getElement(), RenderPosition.BEFOREEND);
-
 render(mainElement, new MainNavigationView(filters).getElement(), RenderPosition.BEFOREEND);
 render(mainElement, new SortingView().getElement(), RenderPosition.BEFOREEND);
-render(mainElement, new FilmsListsView().getElement(), RenderPosition.BEFOREEND);
+render(mainElement, new FilmsListMainView().getElement(), RenderPosition.BEFOREEND);
+
+const filmsElement = mainElement.querySelector(`.films`);
 
 const renderPopup = (card, film) => {
   const filmElementMatches = `.film-card__title, .film-card__poster, .film-card__comments`;
@@ -62,41 +66,12 @@ const renderFilm = (container, film) => {
   renderPopup(card, film);
 };
 
-const renderAllFilms = () => {
-  const filmsElement = mainElement.querySelector(`.films-list`);
-  const filmsMainElement = filmsElement.querySelector(`.js-film-list-main`);
-
-  for (let i = 0; i < Math.min(films.length, FILMS_COUNT_PER_STEP); i++) {
-    renderFilm(filmsMainElement, films[i]);
-  }
-
-  if (films.length > FILMS_COUNT_PER_STEP) {
-    let renderedFilmsCount = FILMS_COUNT_PER_STEP;
-
-    render(filmsElement, new ShowMoreButtonView().getElement(), RenderPosition.BEFOREEND);
-
-    const showMoreButton = mainElement.querySelector(`.films-list__show-more`);
-
-    const showMoreFilms = (evt) => {
-      evt.preventDefault();
-      films
-        .slice(renderedFilmsCount, renderedFilmsCount + FILMS_COUNT_PER_STEP)
-        .forEach((film) => renderFilm(filmsMainElement, film));
-
-      renderedFilmsCount += FILMS_COUNT_PER_STEP;
-
-      if (renderedFilmsCount >= films.length) {
-        showMoreButton.remove();
-      }
-    };
-
-    showMoreButton.addEventListener(`click`, showMoreFilms);
-  }
-};
-
 const renderExtraFilms = () => {
-  const filmsRatedElement = mainElement.querySelector(`.js-film-list-rated`);
-  const filmsCommentedElement = mainElement.querySelector(`.js-film-list-commented`);
+  render(filmsElement, new FilmsListRatedView().getElement(), RenderPosition.BEFOREEND);
+  render(filmsElement, new FilmsListCommentedView().getElement(), RenderPosition.BEFOREEND);
+
+  const filmsRatedElement = filmsElement.querySelector(`.js-film-list-rated`);
+  const filmsCommentedElement = filmsElement.querySelector(`.js-film-list-commented`);
 
   const mostRated = () => films.slice().sort((b, a) => {
     if (a.rating > b.rating) {
@@ -124,6 +99,45 @@ const renderExtraFilms = () => {
   }
 };
 
+const renderAllFilms = () => {
+  const filmsListElement = filmsElement.querySelector(`.films-list`);
+  const filmsMainElement = filmsElement.querySelector(`.js-film-list-main`);
+
+  if (films.length === 0) {
+    render(filmsMainElement, new FilmsListEmptyView().getElement(), RenderPosition.BEFOREEND);
+    return;
+  }
+
+  renderExtraFilms();
+
+  for (let i = 0; i < Math.min(films.length, FILMS_COUNT_PER_STEP); i++) {
+    renderFilm(filmsMainElement, films[i]);
+  }
+
+  if (films.length > FILMS_COUNT_PER_STEP) {
+    let renderedFilmsCount = FILMS_COUNT_PER_STEP;
+
+    const showMoreButton = new ShowMoreButtonView();
+
+    render(filmsListElement, showMoreButton.getElement(), RenderPosition.BEFOREEND);
+
+    const showMoreFilms = (evt) => {
+      evt.preventDefault();
+      films
+        .slice(renderedFilmsCount, renderedFilmsCount + FILMS_COUNT_PER_STEP)
+        .forEach((film) => renderFilm(filmsMainElement, film));
+
+      renderedFilmsCount += FILMS_COUNT_PER_STEP;
+
+      if (renderedFilmsCount >= films.length) {
+        showMoreButton.getElement().remove();
+        showMoreButton.removeElement();
+      }
+    };
+
+    showMoreButton.getElement().addEventListener(`click`, showMoreFilms);
+  }
+};
+
 renderAllFilms();
-renderExtraFilms();
 render(footerStatisticsElement, new FooterStatisticsView(films.length).getElement(), RenderPosition.BEFOREEND);
