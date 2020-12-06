@@ -1,4 +1,6 @@
-export const createFilmCardPopup = (films) => {
+import {createElement} from "../utils.js";
+
+const createFilmCardPopup = (film) => {
   const {
     poster,
     title,
@@ -14,7 +16,7 @@ export const createFilmCardPopup = (films) => {
     description,
     ageRating,
     comments,
-  } = films[0];
+  } = film;
 
   const createGenres = () => {
     return genres.map((genre) => {
@@ -24,8 +26,7 @@ export const createFilmCardPopup = (films) => {
 
   const createComments = () => {
     return comments.map(({text, emotion, author, date}) => {
-      return `
-      <li class="film-details__comment">
+      return `<li class="film-details__comment">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
         </span>
@@ -41,8 +42,7 @@ export const createFilmCardPopup = (films) => {
     }).join(``);
   };
 
-  return `
-  <section class="film-details">
+  return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
       <div class="film-details__close">
@@ -152,3 +152,26 @@ export const createFilmCardPopup = (films) => {
   </form>
 </section>`;
 };
+
+export default class FilmCardPopup {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCardPopup(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
