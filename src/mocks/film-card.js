@@ -1,4 +1,4 @@
-import {getRandomInt, getRandomItem, generateDate} from '../utils.js';
+import {getRandomInt, getRandomItem, generateDate} from '../utils/common.js';
 import {comment} from './comment.js';
 
 const cutArray = (arr) => arr.slice(0, getRandomInt(1, arr.length));

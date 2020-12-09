@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 
 const createFilmCardPopup = (film) => {
   const {
@@ -153,25 +153,14 @@ const createFilmCardPopup = (film) => {
 </section>`;
 };
 
-export default class FilmCardPopup {
+export default class FilmCardPopup extends Abstract {
   constructor(film) {
+    super();
+
     this._film = film;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmCardPopup(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
