@@ -1,7 +1,9 @@
 import Abstract from "./abstract.js";
 
+const CONTROLS_ACTIVE = `film-card__controls-item--active`;
+
 const createFilmCard = (film) => {
-  const {poster, title, rating, year, duration, genres, description, comments} = film;
+  const {poster, title, rating, year, duration, genres, description, comments, isInWatchList, isWatched, isFavorite} = film;
 
   const descriptionCut = () => description.length > 140 ? `${description.slice(0, 139)}...` : description;
 
@@ -17,9 +19,12 @@ const createFilmCard = (film) => {
     <p class="film-card__description">${descriptionCut()}</p>
     <a class="film-card__comments">${comments.length} comments</a>
     <div class="film-card__controls">
-      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-      <button class="film-card__controls-item button film-card__controls-item--favorite" type="button">Mark as favorite</button>
+      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${isInWatchList ? CONTROLS_ACTIVE : ``}"
+        type="button">Add to watchlist</button>
+      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${isWatched ? CONTROLS_ACTIVE : ``}"
+        type="button">Mark as watched</button>
+      <button class="film-card__controls-item button film-card__controls-item--favorite ${isFavorite ? CONTROLS_ACTIVE : ``}"
+        type="button">Mark as favorite</button>
     </div>
   </article>`;
 };
@@ -30,6 +35,7 @@ export default class FilmCard extends Abstract {
 
     this._film = film;
     this._clickHandler = this._clickHandler.bind(this);
+    this._controlsClickHandler = this._controlsClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -44,5 +50,14 @@ export default class FilmCard extends Abstract {
   setClickHandler(callback) {
     this._callback.click = callback;
     this.getElement().addEventListener(`click`, this._clickHandler);
+  }
+
+  _controlsClickHandler(evt) {
+    this._callback.controlsClick(evt);
+  }
+
+  setControlsClickHandler(callback) {
+    this._callback.controlsClick = callback;
+    this.getElement().addEventListener(`click`, this._controlsClickHandler);
   }
 }
