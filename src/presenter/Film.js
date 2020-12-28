@@ -5,12 +5,21 @@ import {onEscKeyDown} from '../utils/common.js';
 
 const FILM_ELEMENT_MATCHES = `.film-card__title, .film-card__poster, .film-card__comments`;
 
+const Mode = {
+  OPEN: `OPEN`,
+  CLOSE: `CLOSE`
+};
+
 export default class FilmPresenter {
-  constructor(container, changeData) {
+  constructor(container, changeData, changeMode) {
     this._filmListContainer = container;
     this._changeData = changeData;
+    this._changeMode = changeMode;
+
+    this._mode = Mode.CLOSE;
 
     this._popupOpenHandler = this._popupOpenHandler.bind(this);
+    this._popupCloseHandler = this._popupCloseHandler.bind(this);
     this._controlsClickHandler = this._controlsClickHandler.bind(this);
   }
 
@@ -22,10 +31,10 @@ export default class FilmPresenter {
 
     this._filmComponent = new FilmCardView(film);
     this._popupComponent = new FilmCardPopupView(film);
-    this._popupComponent.setControlsClickHandler(this._controlsClickHandler);
 
     this._filmComponent.setClickHandler(this._popupOpenHandler);
     this._filmComponent.setControlsClickHandler(this._controlsClickHandler);
+    this._popupComponent.setControlsClickHandler(this._controlsClickHandler);
 
     if (prevFilmComponent) {
       replace(this._filmComponent, prevFilmComponent);
@@ -44,9 +53,9 @@ export default class FilmPresenter {
 
   _popupOpenHandler(evt) {
     if (evt.target.matches(FILM_ELEMENT_MATCHES)) {
-      if (document.querySelector(`.film-details`)) {
-        document.querySelector(`.film-details`).remove();
-      }
+      this._changeMode();
+      this._mode = Mode.OPEN;
+
       render(document.body, this._popupComponent, RenderPosition.BEFOREEND);
 
       document.body.classList.add(`hide-overflow`);
@@ -57,7 +66,7 @@ export default class FilmPresenter {
 
   _popupCloseHandler(evt) {
     if (evt.target.matches(`.film-details__close-btn`) || onEscKeyDown(evt)) {
-      document.body.querySelector(`.film-details`).remove();
+      this.resetView();
 
       document.body.classList.remove(`hide-overflow`);
       document.body.removeEventListener(`click`, this._popupCloseHandler);
@@ -75,10 +84,18 @@ export default class FilmPresenter {
       this._changeData(Object.assign({}, this._film, {
         isWatched: !this._film.isWatched
       }));
-    } else if (evt.target.matches(`.film-card__controls-item--favorite`) || evt.target.id === `favorite`) {
+    } else
+    if (evt.target.matches(`.film-card__controls-item--favorite`) || evt.target.id === `favorite`) {
       this._changeData(Object.assign({}, this._film, {
         isFavorite: !this._film.isFavorite
       }));
+    }
+  }
+
+  resetView() {
+    if (this._mode !== Mode.CLOSE) {
+      remove(this._popupComponent);
+      this.mode = Mode.CLOSE;
     }
   }
 
