@@ -3,6 +3,8 @@ import {comment} from './comment.js';
 
 const cutArray = (arr) => arr.slice(0, getRandomInt(1, arr.length));
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 const posters = [
   `made-for-each-other.png`,
   `popeye-meets-sinbad.png`,
@@ -48,6 +50,7 @@ const descriptions = [
 
 export const filmCard = () => {
   return {
+    id: generateId(),
     poster: getRandomItem(posters),
     title: getRandomItem(titles),
     originalTitle: `title`,
@@ -63,7 +66,7 @@ export const filmCard = () => {
     description: cutArray(descriptions).join(` `),
     ageRating: `16+`,
     comments: new Array(getRandomInt(1, 5)).fill().map(comment),
-    isInWatchlist: Boolean(getRandomInt(0, 1)),
+    isInWatchList: Boolean(getRandomInt(0, 1)),
     isWatched: Boolean(getRandomInt(0, 1)),
     isFavorite: Boolean(getRandomInt(0, 1)),
   };
