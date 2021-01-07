@@ -59,7 +59,6 @@ export const filmCard = () => {
     writers: `Билл Лоуренс, Дэб Фордхэм, Дженей Баккен`,
     actors: `Ken Jenkins, Sam Lloyd, Robert Maschio, Aloma Wright, John C. McGinley`,
     release: generateDate(),
-    year: getRandomInt(1929, 1964),
     duration: `${getRandomInt(0, 1)}h ${getRandomInt(0, 60)}m`,
     country: `США`,
     genres: cutArray(genres),
