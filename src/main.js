@@ -1,6 +1,5 @@
 import UserProfileView from './view/profile.js';
 import MainNavigationView from './view/navigation.js';
-import SortingView from './view/sorting.js';
 import FooterStatisticsView from './view/footer-stats.js';
 import FilmsList from './presenter/FilmsList.js';
 import {render, RenderPosition} from './utils/render.js';
@@ -19,8 +18,7 @@ const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 
 render(headerElement, new UserProfileView(), RenderPosition.BEFOREEND);
 render(mainElement, new MainNavigationView(filters), RenderPosition.BEFOREEND);
-render(mainElement, new SortingView(), RenderPosition.BEFOREEND);
 
-const movieListPresenter = new FilmsList(mainElement);
-movieListPresenter.init(films);
+const filmListPresenter = new FilmsList(mainElement);
+filmListPresenter.init(films);
 render(footerStatisticsElement, new FooterStatisticsView(films.length), RenderPosition.BEFOREEND);
