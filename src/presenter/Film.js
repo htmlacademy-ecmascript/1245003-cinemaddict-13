@@ -1,5 +1,6 @@
 import FilmCardView from '../view/film-card.js';
 import FilmCardPopupView from '../view/card-popup.js';
+import NewCommentFormView from '../view/new-comment-form.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import {onEscKeyDown} from '../utils/common.js';
 
@@ -51,12 +52,20 @@ export default class FilmPresenter {
     remove(prevPopupComponent);
   }
 
+  _renderNewCommentFrom() {
+    const newCommentForm = new NewCommentFormView();
+    const newCommentFormContainer = this._popupComponent.getElement().querySelector(`.film-details__bottom-container`);
+    render(newCommentFormContainer, newCommentForm, RenderPosition.BEFOREEND);
+  }
+
   _popupOpenHandler(evt) {
     if (evt.target.matches(FILM_ELEMENT_MATCHES)) {
       this._changeMode();
       this._mode = Mode.OPEN;
 
       render(document.body, this._popupComponent, RenderPosition.BEFOREEND);
+
+      this._renderNewCommentFrom();
 
       document.body.classList.add(`hide-overflow`);
       document.body.addEventListener(`click`, this._popupCloseHandler);

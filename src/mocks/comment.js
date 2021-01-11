@@ -1,17 +1,11 @@
 import {getRandomItem, generateDate} from '../utils/common.js';
+import {EMOTIONS} from '../const.js';
 
 const comments = [
   `Interesting setting and a good cast`,
   `Booooooooooring`,
   `Very very old. Meh`,
   `Almost two hours? Seriously?`
-];
-
-const emotions = [
-  `angry`,
-  `puke`,
-  `sleeping`,
-  `smile`
 ];
 
 const authors = [
@@ -24,7 +18,7 @@ const authors = [
 export const comment = () => {
   return {
     text: getRandomItem(comments),
-    emotion: getRandomItem(emotions),
+    emotion: getRandomItem(EMOTIONS),
     author: getRandomItem(authors),
     date: generateDate(),
   };
