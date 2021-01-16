@@ -1,6 +1,34 @@
-import Abstract from "./abstract.js";
+import Smart from "./smart.js";
+import {EMOTIONS} from '../const';
 
-const createFilmCardPopup = (film) => {
+const createCommentEmoji = (emotion) => emotion ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">` : ``;
+
+const createEmotionInputsList = (checkedEmotion) =>
+  EMOTIONS.map((emotion) => {
+    return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji"
+      type="radio" id="emoji-${emotion}" value="${emotion}" ${emotion === checkedEmotion ? `checked` : ``}>
+    <label class="film-details__emoji-label" for="emoji-${emotion}">
+      <img src="./images/emoji/${emotion}.png" width="30" height="30" alt="${emotion}">
+    </label>`;
+  }).join(``);
+
+const createNewCommentForm = (emotionTemplate, comment, checkedEmotion) => {
+  return `<div class="film-details__new-comment">
+  <div class="film-details__add-emoji-label">
+    ${emotionTemplate ? emotionTemplate : ``}
+  </div>
+
+  <label class="film-details__comment-label">
+    <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${comment ? comment : ``}</textarea>
+  </label>
+
+  <div class="film-details__emoji-list">
+    ${createEmotionInputsList(checkedEmotion)}
+  </div>
+</div>`;
+};
+
+const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
   const {
     poster,
     title,
@@ -20,6 +48,8 @@ const createFilmCardPopup = (film) => {
     isWatched,
     isFavorite
   } = film;
+
+  const NewCommentForm = createNewCommentForm(emotionElement, comment, checkedEmotion);
 
   const createGenres = () => {
     return genres.map((genre) => {
@@ -121,59 +151,89 @@ const createFilmCardPopup = (film) => {
         <ul class="film-details__comments-list">
           ${createComments()}
         </ul>
-        <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
-          <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here"
-              name="comment"></textarea>
-          </label>
-          <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile"
-              value="smile">
-            <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-            </label>
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio"
-              id="emoji-sleeping" value="sleeping">
-            <label class="film-details__emoji-label" for="emoji-sleeping">
-              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-            </label>
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke"
-              value="puke">
-            <label class="film-details__emoji-label" for="emoji-puke">
-              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-            </label>
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry"
-              value="angry">
-            <label class="film-details__emoji-label" for="emoji-angry">
-              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-            </label>
-          </div>
-        </div>
+        ${NewCommentForm}
       </section>
     </div>
   </form>
 </section>`;
 };
 
-export default class FilmCardPopup extends Abstract {
+export default class FilmCardPopup extends Smart {
   constructor(film) {
     super();
+    this._data = film;
 
-    this._film = film;
+    this._emotionElement = null;
+    this._comment = null;
+    this._checkedEmotion = null;
+
     this._controlsClickHandler = this._controlsClickHandler.bind(this);
+
+    this._emotionChangeHandler = this._emotionChangeHandler.bind(this);
+    this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFilmCardPopup(this._film);
+    return createFilmCardPopup(this._data, this._emotionElement, this._comment, this._checkedEmotion);
+  }
+
+  _getScrollPosition() {
+    this._scrollPosition = this.getElement().scrollTop;
+  }
+
+  _setScrollPosition() {
+    this.getElement().scrollTo(0, this._scrollPosition);
   }
 
   _controlsClickHandler(evt) {
+    evt.preventDefault();
     this._callback.controlsClick(evt);
   }
 
   setControlsClickHandler(callback) {
     this._callback.controlsClick = callback;
-    this.getElement().addEventListener(`click`, this._controlsClickHandler);
+
+    this.getElement()
+      .querySelector(`.film-details__controls`)
+      .addEventListener(`change`, this._controlsClickHandler);
+  }
+
+  _emotionChangeHandler(evt) {
+    this._emotionElement = createCommentEmoji(evt.target.value);
+    this._checkedEmotion = evt.target.value;
+
+    this._getScrollPosition();
+    this.updateElement();
+  }
+
+  _descriptionInputHandler(evt) {
+    this._comment = evt.target.value;
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.film-details__emoji-list`)
+      .addEventListener(`change`, this._emotionChangeHandler);
+    this.getElement()
+      .querySelector(`.film-details__comment-input`)
+      .addEventListener(`input`, this._descriptionInputHandler);
+  }
+
+  restoreHandlers() {
+    this.setControlsClickHandler(this._callback.controlsClick);
+
+    this._setInnerHandlers();
+    this._setScrollPosition();
+  }
+
+  reset() {
+    this._scrollPosition = 0;
+    this._emotionElement = null;
+    this._comment = null;
+    this._checkedEmotion = null;
+
+    this.updateElement();
   }
 }

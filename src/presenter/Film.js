@@ -45,6 +45,8 @@ export default class FilmPresenter {
 
     if (prevPopupComponent) {
       replace(this._popupComponent, prevPopupComponent);
+
+      this._setScrollPosition();
     }
 
     remove(prevFilmComponent);
@@ -58,6 +60,8 @@ export default class FilmPresenter {
 
       render(document.body, this._popupComponent, RenderPosition.BEFOREEND);
 
+      this._popupComponent.restoreHandlers();
+
       document.body.classList.add(`hide-overflow`);
       document.body.addEventListener(`click`, this._popupCloseHandler);
       document.addEventListener(`keydown`, this._popupCloseHandler);
@@ -67,6 +71,7 @@ export default class FilmPresenter {
   _popupCloseHandler(evt) {
     if (evt.target.matches(`.film-details__close-btn`) || onEscKeyDown(evt)) {
       this.resetView();
+      this._popupComponent.reset();
 
       document.body.classList.remove(`hide-overflow`);
       document.body.removeEventListener(`click`, this._popupCloseHandler);
@@ -74,7 +79,17 @@ export default class FilmPresenter {
     }
   }
 
+  _getScrollPosition() {
+    this._scrollPosition = this._popupComponent.getElement().scrollTop;
+  }
+
+  _setScrollPosition() {
+    this._popupComponent.getElement().scrollTo(0, this._scrollPosition);
+  }
+
   _controlsClickHandler(evt) {
+    this._getScrollPosition();
+
     if (evt.target.matches(`.film-card__controls-item--add-to-watchlist`) || evt.target.id === `watchlist`) {
       this._changeData(Object.assign({}, this._film, {
         isInWatchList: !this._film.isInWatchList
