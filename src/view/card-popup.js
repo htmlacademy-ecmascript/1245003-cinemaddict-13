@@ -1,5 +1,13 @@
+import relativeTime from 'dayjs/plugin/relativeTime';
+import duration from 'dayjs/plugin/duration';
+import dayjs from 'dayjs';
+
 import Smart from "./smart.js";
 import {EMOTIONS} from '../const';
+import {generateDuration} from "../utils/common.js";
+
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 const createCommentEmoji = (emotion) => emotion ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">` : ``;
 
@@ -38,7 +46,7 @@ const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
     writers,
     actors,
     release,
-    duration,
+    filmDuration,
     country,
     genres,
     description,
@@ -50,6 +58,12 @@ const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
   } = film;
 
   const NewCommentForm = createNewCommentForm(emotionElement, comment, checkedEmotion);
+
+  const {hours, minutes} = dayjs.duration(filmDuration, `minutes`).$d;
+
+  const createFilmDuration = generateDuration(hours, minutes);
+
+  const humanizeCommentDate = (date) => dayjs(date).fromNow();
 
   const createGenres = () => {
     return genres.map((genre) => {
@@ -67,7 +81,7 @@ const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
           <p class="film-details__comment-text">${text}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
-            <span class="film-details__comment-day">${date}</span>
+            <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
@@ -115,7 +129,7 @@ const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${duration}</td>
+              <td class="film-details__cell">${createFilmDuration}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>

@@ -11,11 +11,14 @@ export const getRandomInt = (min, max) => {
 export const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 export const generateDate = () => {
-  const maxDayGap = 7;
-  const daysGap = getRandomInt(-maxDayGap, maxDayGap);
+  const minDayGap = 0;
+  const maxDayGap = -31;
+  const daysGap = getRandomInt(minDayGap, maxDayGap);
 
   return dayjs().add(daysGap, `day`).format(`DD MMMM YYYY`);
 };
+
+export const generateDuration = (hours, minutes) => hours === 0 ? `${minutes}m` : `${hours}h ${minutes}m`;
 
 export const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
