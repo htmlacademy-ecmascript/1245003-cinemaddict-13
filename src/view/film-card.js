@@ -1,12 +1,21 @@
 import dayjs from "dayjs";
+import duration from 'dayjs/plugin/duration';
+
 import Abstract from "./abstract.js";
+import {generateDuration} from "../utils/common.js";
+
+dayjs.extend(duration);
 
 const CONTROLS_ACTIVE = `film-card__controls-item--active`;
 
 const createFilmCard = (film) => {
-  const {poster, title, rating, release, duration, genres, description, comments, isInWatchList, isWatched, isFavorite} = film;
+  const {poster, title, rating, release, filmDuration, genres, description, comments, isInWatchList, isWatched, isFavorite} = film;
 
-  const releaseYear = () => dayjs(release).format(`YYYY`);
+  const releaseYear = dayjs(release).format(`YYYY`);
+
+  const {hours, minutes} = dayjs.duration(filmDuration, `minutes`).$d;
+
+  const createFilmDuration = generateDuration(hours, minutes);
 
   const descriptionCut = () => description.length > 140 ? `${description.slice(0, 139)}...` : description;
 
@@ -14,8 +23,8 @@ const createFilmCard = (film) => {
     <h3 class="film-card__title">${title}</h3>
     <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
-      <span class="film-card__year">${releaseYear()}</span>
-      <span class="film-card__duration">${duration}</span>
+      <span class="film-card__year">${releaseYear}</span>
+      <span class="film-card__duration">${createFilmDuration}</span>
       <span class="film-card__genre">${genres[0]}</span>
     </p>
     <img src="./images/posters/${poster}" alt="" class="film-card__poster">
