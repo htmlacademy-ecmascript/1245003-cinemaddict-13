@@ -2,6 +2,10 @@ import dayjs from "dayjs";
 
 export const onEscKeyDown = (evt) => evt.key === `Escape` ? true : false;
 
+export const onCtrlEnterKeyDown = (evt) => (evt.ctrlKey && evt.key === `Enter`) ? true : false;
+
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 export const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);

@@ -1,6 +1,7 @@
 import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
 import dayjs from 'dayjs';
+import he from 'he';
 
 import Smart from "./smart.js";
 import {EMOTIONS} from '../const';
@@ -57,13 +58,13 @@ const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
     isFavorite
   } = film;
 
+  const humanizeCommentDate = (date) => dayjs(date).fromNow();
+
   const NewCommentForm = createNewCommentForm(emotionElement, comment, checkedEmotion);
 
   const {hours, minutes} = dayjs.duration(filmDuration, `minutes`).$d;
 
   const createFilmDuration = generateDuration(hours, minutes);
-
-  const humanizeCommentDate = (date) => dayjs(date).fromNow();
 
   const createGenres = () => {
     return genres.map((genre) => {
@@ -71,14 +72,14 @@ const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
     }).join(``);
   };
 
-  const createComments = () => {
-    return comments.map(({text, emotion, author, date}) => {
-      return `<li class="film-details__comment">
+  const createComments = () =>
+    comments.map(({id, author, emotion, date, text}) => {
+      return `<li class="film-details__comment" data-id="${id}">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
         </span>
         <div>
-          <p class="film-details__comment-text">${text}</p>
+          <p class="film-details__comment-text">${he.encode(text)}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
             <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
@@ -87,7 +88,6 @@ const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
         </div>
       </li>`;
     }).join(``);
-  };
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -186,6 +186,9 @@ export default class FilmCardPopup extends Smart {
     this._emotionChangeHandler = this._emotionChangeHandler.bind(this);
     this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
 
+    this._commentDeleteHandler = this._commentDeleteHandler.bind(this);
+    this._commentAddHandler = this._commentAddHandler.bind(this);
+
     this._setInnerHandlers();
   }
 
@@ -226,6 +229,36 @@ export default class FilmCardPopup extends Smart {
     this._comment = evt.target.value;
   }
 
+  _disableDeleteButton(button, isDisabled) {
+    button.disabled = isDisabled;
+    button.innerHTML = isDisabled ? `Deleting…` : `Delete`;
+  };
+
+  _commentDeleteHandler(evt) {
+    evt.preventDefault();
+
+    if (evt.target.matches(`.film-details__comment-delete`)) {
+      this._disableDeleteButton(evt.target, true);
+      const id = evt.target.closest(`.film-details__comment`).dataset.id;
+      this._callback.commentDelete(id);
+    }
+  }
+
+  setCommentDeleteHandler(callback) {
+    this._callback.commentDelete = callback;
+    this.getElement().querySelector(`.film-details__comments-list`)
+      .addEventListener(`click`, this._commentDeleteHandler);
+  }
+
+  _commentAddHandler(evt) {
+    this._callback.commentAdd(evt);
+  }
+
+  setCommentAddHandler(callback) {
+    this._callback.commentAdd = callback;
+    document.addEventListener(`keydown`, this._commentAddHandler);
+  }
+
   _setInnerHandlers() {
     this.getElement()
       .querySelector(`.film-details__emoji-list`)
@@ -237,6 +270,8 @@ export default class FilmCardPopup extends Smart {
 
   restoreHandlers() {
     this.setControlsClickHandler(this._callback.controlsClick);
+    this.setCommentDeleteHandler(this._callback.commentDelete);
+    this.setCommentAddHandler(this._callback.commentAdd);
 
     this._setInnerHandlers();
     this._setScrollPosition();
