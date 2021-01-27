@@ -15,7 +15,7 @@ const authors = [
   `Austin Powers`
 ];
 
-export const comment = (id) => {
+export const comment = () => {
   return {
     id: generateId(),
     text: getRandomItem(comments),

@@ -61,26 +61,26 @@ export default class FilmPresenter {
   _commentAddHandler(evt) {
     if (onCtrlEnterKeyDown(evt)) {
       const comments = this._film.comments;
-      let id = 0;
+      let newCommentId = 0;
 
       const text = this._popupComponent.getElement().querySelector(`.film-details__comment-input`);
       const emotion = this._popupComponent.getElement().querySelector(`.film-details__emoji-item[checked]`);
 
       if (comments.length > 0) {
-        id = comments.length + 1;
+        newCommentId = comments.length + 1;
       }
 
       if (text.value !== `` && emotion) {
-        const newComment = {id: id, text: text.value, emotion: emotion.value, author: `author`, date: new Date()};
+        const newComment = {id: newCommentId, text: text.value, emotion: emotion.value, author: `author`, date: new Date()};
 
         this._getScrollPosition();
 
         this._changeData(
-          UserAction.ADD_COMMENT,
-          UpdateType.PATCH,
-          Object.assign({}, this._film, {
-            comments: [...comments, newComment]
-        }));
+            UserAction.ADD_COMMENT,
+            UpdateType.PATCH,
+            Object.assign({}, this._film, {
+              comments: [...comments, newComment]
+            }));
       }
     }
   }
@@ -89,11 +89,11 @@ export default class FilmPresenter {
     this._getScrollPosition();
     const remainingComments = this._film.comments.slice().filter((comment) => comment.id !== parseInt(id, 10));
     this._changeData(
-      UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
-      Object.assign({}, this._film, {
-        comments: remainingComments
-    }));
+        UserAction.DELETE_COMMENT,
+        UpdateType.PATCH,
+        Object.assign({}, this._film, {
+          comments: remainingComments
+        }));
   }
 
   _popupOpenHandler(evt) {
@@ -135,27 +135,27 @@ export default class FilmPresenter {
 
     if (evt.target.matches(`.film-card__controls-item--add-to-watchlist`) || evt.target.id === `watchlist`) {
       this._changeData(
-        UserAction.UPDATE_FILM,
-        UpdateType.PATCH,
-        Object.assign({}, this._film, {
-        isInWatchList: !this._film.isInWatchList
-      }));
+          UserAction.UPDATE_FILM,
+          UpdateType.PATCH,
+          Object.assign({}, this._film, {
+            isInWatchList: !this._film.isInWatchList
+          }));
     } else
     if (evt.target.matches(`.film-card__controls-item--mark-as-watched`) || evt.target.id === `watched`) {
       this._changeData(
-        UserAction.UPDATE_FILM,
-        UpdateType.PATCH,
-        Object.assign({}, this._film, {
-        isWatched: !this._film.isWatched
-      }));
+          UserAction.UPDATE_FILM,
+          UpdateType.PATCH,
+          Object.assign({}, this._film, {
+            isWatched: !this._film.isWatched
+          }));
     } else
     if (evt.target.matches(`.film-card__controls-item--favorite`) || evt.target.id === `favorite`) {
       this._changeData(
-        UserAction.UPDATE_FILM,
-        UpdateType.PATCH,
-        Object.assign({}, this._film, {
-        isFavorite: !this._film.isFavorite
-      }));
+          UserAction.UPDATE_FILM,
+          UpdateType.PATCH,
+          Object.assign({}, this._film, {
+            isFavorite: !this._film.isFavorite
+          }));
     }
   }
 

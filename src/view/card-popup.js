@@ -232,7 +232,7 @@ export default class FilmCardPopup extends Smart {
   _disableDeleteButton(button, isDisabled) {
     button.disabled = isDisabled;
     button.innerHTML = isDisabled ? `Deleting…` : `Delete`;
-  };
+  }
 
   _commentDeleteHandler(evt) {
     evt.preventDefault();

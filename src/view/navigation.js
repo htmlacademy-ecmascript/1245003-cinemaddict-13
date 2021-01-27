@@ -40,6 +40,6 @@ export default class MainNavigation extends Abstract {
 
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener(`click`, this._filterTypeChangeHandler)
+    this.getElement().addEventListener(`click`, this._filterTypeChangeHandler);
   }
 }
