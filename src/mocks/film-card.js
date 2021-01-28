@@ -1,9 +1,7 @@
-import {getRandomInt, getRandomItem, generateDate} from '../utils/common.js';
+import {getRandomInt, getRandomItem, generateDate, generateId} from '../utils/common.js';
 import {comment} from './comment.js';
 
 const cutArray = (arr) => arr.slice(0, getRandomInt(1, arr.length));
-
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const posters = [
   `made-for-each-other.png`,

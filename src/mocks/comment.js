@@ -1,4 +1,4 @@
-import {getRandomItem, generateDate} from '../utils/common.js';
+import {getRandomItem, generateDate, generateId} from '../utils/common.js';
 import {EMOTIONS} from '../const.js';
 
 const comments = [
@@ -17,6 +17,7 @@ const authors = [
 
 export const comment = () => {
   return {
+    id: generateId(),
     text: getRandomItem(comments),
     emotion: getRandomItem(EMOTIONS),
     author: getRandomItem(authors),
