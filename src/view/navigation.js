@@ -38,7 +38,10 @@ export default class MainNavigation extends Abstract {
   _menuClickHandler(evt) {
     evt.preventDefault();
 
-    if (evt.target.matches(`.main-navigation__additional`)) {
+    if (
+      evt.target.matches(`.main-navigation__additional`) &&
+      this.getElement().querySelector(`.main-navigation__item--active`)
+    ) {
       this.getElement()
         .querySelector(`.main-navigation__item--active`)
         .classList.remove(`main-navigation__item--active`);
@@ -47,7 +50,7 @@ export default class MainNavigation extends Abstract {
       this._callback.menuClick(MenuItem.STATS);
     }
 
-    if (evt.target.dataset.filter === `All`) {
+    if (evt.target.dataset.filter) {
       this.getElement()
         .querySelector(`.main-navigation__additional`)
         .classList.remove(`main-navigation__additional--active`);
