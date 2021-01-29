@@ -1,4 +1,5 @@
-import Abstract from "./abstract.js";
+import Abstract from './abstract.js';
+import {MenuItem} from '../const.js';
 
 const createMainNavigation = (filter, currentFilterType) => {
 
@@ -27,19 +28,52 @@ export default class MainNavigation extends Abstract {
     this._currentFilter = currentFilterType;
 
     this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
+    this._menuClickHandler = this._menuClickHandler.bind(this);
   }
 
   getTemplate() {
     return createMainNavigation(this._filter, this._currentFilter);
   }
 
-  _filterTypeChangeHandler(evt) {
+  _menuClickHandler(evt) {
     evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.dataset.filter);
+
+    if (evt.target.matches(`.main-navigation__additional`)) {
+      this.getElement()
+        .querySelector(`.main-navigation__item--active`)
+        .classList.remove(`main-navigation__item--active`);
+      evt.target.classList.add(`main-navigation__additional--active`);
+
+      this._callback.menuClick(MenuItem.STATS);
+    }
+
+    if (evt.target.dataset.filter === `All`) {
+      this.getElement()
+        .querySelector(`.main-navigation__additional`)
+        .classList.remove(`main-navigation__additional--active`);
+      evt.target.classList.add(`main-navigation__item--active`);
+
+      this._callback.menuClick(MenuItem.FILMS);
+    }
+  }
+
+  setMenuClickHandler(callback) {
+    this._callback.menuClick = callback;
+    this.getElement()
+      .addEventListener(`click`, this._menuClickHandler);
+  }
+
+  _filterTypeChangeHandler(evt) {
+    if (evt.target.matches(`.main-navigation__item`)) {
+      evt.preventDefault();
+      this._callback.filterTypeChange(evt.target.dataset.filter);
+    }
   }
 
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener(`click`, this._filterTypeChangeHandler);
+    this.getElement()
+      .querySelector(`.main-navigation__items`)
+      .addEventListener(`click`, this._filterTypeChangeHandler);
   }
 }

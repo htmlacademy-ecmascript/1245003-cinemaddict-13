@@ -8,7 +8,6 @@ import FilmPresenter from './Film.js';
 import Filters from '../utils/filters.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
 import {sortByDate, sortByRating} from '../utils/sorting.js';
-// import {updateItem} from '../utils/common.js';
 import {SortType, UserAction, UpdateType} from '../const.js';
 
 const FILMS_COUNT_PER_STEP = 5;
@@ -47,7 +46,21 @@ export default class FilmsList {
 
   init() {
     render(this._container, this._filmsListMainComponent, RenderPosition.BEFOREEND);
+
     this._renderAllFilms();
+  }
+
+  hide() {
+    this._clearFilmList({resetRenderedFilmsCount: true, resetSortType: true});
+    this._filmsListMainComponent.getElement().classList.add(`visually-hidden`);
+  }
+
+  show() {
+    if (this._filmsListMainComponent.getElement().classList.contains(`visually-hidden`)) {
+      this._clearFilmList({resetRenderedFilmsCount: true, resetSortType: true});
+      this._renderAllFilms();
+    }
+    this._filmsListMainComponent.getElement().classList.remove(`visually-hidden`);
   }
 
   _getFilms() {
@@ -91,16 +104,13 @@ export default class FilmsList {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть фильма (например, когда произошло действие с комментарием)
         this._filmPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        // - обновить список (например, когда фильм отметили просмотренным/фав/маст вотч)
         this._clearFilmList();
         this._renderAllFilms();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю страницу (например, при переключении фильтра)
         this._clearFilmList({resetRenderedFilmsCount: true, resetSortType: true});
         this._renderAllFilms();
         break;
