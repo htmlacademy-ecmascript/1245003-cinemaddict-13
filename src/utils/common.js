@@ -16,7 +16,7 @@ export const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)
 
 export const generateDate = () => {
   const minDayGap = 0;
-  const maxDayGap = -31;
+  const maxDayGap = -365;
   const daysGap = getRandomInt(minDayGap, maxDayGap);
 
   return dayjs().add(daysGap, `day`).format(`DD MMMM YYYY`);

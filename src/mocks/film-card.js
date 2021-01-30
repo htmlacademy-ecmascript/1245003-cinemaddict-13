@@ -66,5 +66,6 @@ export const filmCard = () => {
     isInWatchList: Boolean(getRandomInt(0, 1)),
     isWatched: Boolean(getRandomInt(0, 1)),
     isFavorite: Boolean(getRandomInt(0, 1)),
+    watchingDate: generateDate(),
   };
 };

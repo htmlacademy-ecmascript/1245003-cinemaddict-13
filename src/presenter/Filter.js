@@ -4,8 +4,10 @@ import {render, replace, remove, RenderPosition} from '../utils/render.js';
 import {FilterType, UpdateType} from '../const.js';
 
 export default class FilterPresenter {
-  constructor(filterContainer, filterModel, filmsModel) {
+  constructor(filterContainer, filterModel, filmsModel, callback) {
     this._filterContainer = filterContainer;
+
+    this._menuClick = callback;
 
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
@@ -27,7 +29,9 @@ export default class FilterPresenter {
     const prevFilterComponent = this._filterComponent;
 
     this._filterComponent = new FilterView(filters, this._currentFilter);
+
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
+    this._filterComponent.setMenuClickHandler(this._menuClick);
 
     if (prevFilterComponent === null) {
       render(this._filterContainer, this._filterComponent, RenderPosition.AFTERBEGIN);
