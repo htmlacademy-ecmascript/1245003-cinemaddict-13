@@ -49,7 +49,9 @@ const renderChart = (statisticCtx, genresList) => {
             display: false,
             drawBorder: false
           },
-          barThickness: 24
+          dataset: {
+            barThickness: 24
+          }
         }],
         xAxes: [{
           ticks: {
