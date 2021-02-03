@@ -37,7 +37,7 @@ const createNewCommentForm = (emotionTemplate, comment, checkedEmotion) => {
 </div>`;
 };
 
-const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
+const createFilmCardPopup = (film, emotionElement, newComment, checkedEmotion) => {
   const {
     poster,
     title,
@@ -60,7 +60,7 @@ const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
 
   const humanizeCommentDate = (date) => dayjs(date).fromNow();
 
-  const NewCommentForm = createNewCommentForm(emotionElement, comment, checkedEmotion);
+  const NewCommentForm = createNewCommentForm(emotionElement, newComment, checkedEmotion);
 
   const {hours, minutes} = dayjs.duration(filmDuration, `minutes`).$d;
 
@@ -73,13 +73,13 @@ const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
   };
 
   const createComments = () =>
-    comments.map(({id, author, emotion, date, text}) => {
+    comments.map(({id, author, emotion, date, comment}) => {
       return `<li class="film-details__comment" data-id="${id}">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
         </span>
         <div>
-          <p class="film-details__comment-text">${he.encode(text)}</p>
+          <p class="film-details__comment-text">${he.encode(comment)}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
             <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
@@ -97,8 +97,8 @@ const createFilmCardPopup = (film, emotionElement, comment, checkedEmotion) => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
-          <p class="film-details__age">${ageRating}</p>
+          <img class="film-details__poster-img" src="${poster}" alt="">
+          <p class="film-details__age">${ageRating}+</p>
         </div>
         <div class="film-details__info">
           <div class="film-details__info-head">
@@ -251,7 +251,9 @@ export default class FilmCardPopup extends Smart {
   }
 
   _commentAddHandler(evt) {
-    this._callback.commentAdd(evt);
+    if (evt.key === `Enter` && evt.ctrlKey) {
+      this._callback.commentAdd(evt);
+    }
   }
 
   setCommentAddHandler(callback) {

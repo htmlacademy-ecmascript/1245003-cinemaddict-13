@@ -12,10 +12,11 @@ const Mode = {
 };
 
 export default class FilmPresenter {
-  constructor(container, changeData, changeMode) {
+  constructor(container, changeData, changeMode, api) {
     this._filmListContainer = container;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._api = api;
 
     this._mode = Mode.CLOSE;
 
@@ -39,7 +40,6 @@ export default class FilmPresenter {
     this._filmComponent.setControlsClickHandler(this._controlsClickHandler);
     this._popupComponent.setControlsClickHandler(this._controlsClickHandler);
     this._popupComponent.setCommentDeleteHandler(this._commentDeleteHandler);
-    this._popupComponent.setCommentAddHandler(this._commentAddHandler);
 
     if (prevFilmComponent) {
       replace(this._filmComponent, prevFilmComponent);
@@ -60,40 +60,29 @@ export default class FilmPresenter {
 
   _commentAddHandler(evt) {
     if (onCtrlEnterKeyDown(evt)) {
-      const comments = this._film.comments;
-      let newCommentId = 0;
-
       const text = this._popupComponent.getElement().querySelector(`.film-details__comment-input`);
       const emotion = this._popupComponent.getElement().querySelector(`.film-details__emoji-item[checked]`);
 
-      if (comments.length > 0) {
-        newCommentId = comments.length + 1;
-      }
-
       if (text.value !== `` && emotion) {
-        const newComment = {id: newCommentId, text: text.value, emotion: emotion.value, author: `author`, date: new Date()};
-
         this._getScrollPosition();
 
         this._changeData(
             UserAction.ADD_COMMENT,
             UpdateType.PATCH,
-            Object.assign({}, this._film, {
-              comments: [...comments, newComment]
-            }));
+            Object.assign({}, {id: this._film.id}, {emotion: emotion.value, comment: text.value, date: new Date().toISOString()})
+        );
       }
     }
   }
 
   _commentDeleteHandler(id) {
     this._getScrollPosition();
-    const remainingComments = this._film.comments.slice().filter((comment) => comment.id !== parseInt(id, 10));
+
     this._changeData(
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
-        Object.assign({}, this._film, {
-          comments: remainingComments
-        }));
+        Object.assign({}, {id: this._film.id}, {comment: id}
+        ));
   }
 
   _popupOpenHandler(evt) {
@@ -102,6 +91,7 @@ export default class FilmPresenter {
       this._mode = Mode.OPEN;
 
       render(document.body, this._popupComponent, RenderPosition.BEFOREEND);
+      this._popupComponent.setCommentAddHandler(this._commentAddHandler);
 
       this._popupComponent.restoreHandlers();
 

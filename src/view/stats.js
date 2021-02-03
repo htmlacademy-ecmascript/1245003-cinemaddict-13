@@ -49,7 +49,9 @@ const renderChart = (statisticCtx, genresList) => {
             display: false,
             drawBorder: false
           },
-          barThickness: 24
+          dataset: {
+            barThickness: 24
+          }
         }],
         xAxes: [{
           ticks: {
@@ -132,14 +134,12 @@ const createStatisticsTemplate = (stats) => {
 };
 
 export default class Stats extends Smart {
-  constructor(filmsModel) {
+  constructor(films) {
     super();
 
-    this._filmsModel = filmsModel;
+    this._films = films;
 
     this._activeFilter = StatsPeriod.ALL_TIME;
-
-    this._filmsChart = null;
 
     this._filterChangeHandler = this._filterChangeHandler.bind(this);
 
@@ -168,7 +168,7 @@ export default class Stats extends Smart {
     const monthAgo = dayjs().subtract(1, `month`).toDate();
     const yearAgo = dayjs().subtract(1, `year`).toDate();
 
-    const films = this._filmsModel.getFilms();
+    const films = this._films;
     let genresList = new Map();
     let filmsWatched = [];
 
