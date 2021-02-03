@@ -3,7 +3,6 @@ import FilmsModel from './model/films.js';
 
 import UserProfileView from './view/profile.js';
 import FooterStatisticsView from './view/footer-stats.js';
-import StatsView from './view/stats.js';
 
 import FilmsList from './presenter/FilmsList.js';
 import Filters from './presenter/Filter.js';
