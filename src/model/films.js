@@ -195,7 +195,7 @@ export default class FilmsModel extends Observer {
             "writers": film.writers,
             "actors": film.actors,
             "release": {
-              "date": film.release.toISOString(),
+              "date": film.release,
               "release_country": film.country
             },
             "runtime": film.filmDuration,

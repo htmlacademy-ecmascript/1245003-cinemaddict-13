@@ -7,15 +7,10 @@ import StatsView from './view/stats.js';
 
 import FilmsList from './presenter/FilmsList.js';
 import Filters from './presenter/Filter.js';
+import Stats from './presenter/Stats.js';
 
-import {
-  render,
-  RenderPosition
-} from './utils/render.js';
-import {
-  MenuItem,
-  UpdateType
-} from './const.js';
+import {render, RenderPosition} from './utils/render.js';
+import {MenuItem, UpdateType} from './const.js';
 import Api from './api.js';
 
 const AUTHORIZATION = `Basic VkeZ31OVLyQdG9Bk`;
@@ -28,16 +23,25 @@ const headerElement = bodyElement.querySelector(`.header`);
 const mainElement = bodyElement.querySelector(`.main`);
 const footerStatisticsElement = document.querySelector(`.footer__statistics`);
 
+let statsPresenter = null;
+
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.FILMS:
       filmListPresenter.show();
-      statsComponent.hide();
+      if (statsPresenter !== null) {
+        statsPresenter.destroy();
+      }
       break;
 
     case MenuItem.STATS:
       filmListPresenter.hide();
-      statsComponent.show();
+      if (statsPresenter !== null) {
+        statsPresenter.destroy();
+      }
+      statsPresenter = new Stats(mainElement, filmsModel);
+
+      statsPresenter.init();
       break;
   }
 };
@@ -48,11 +52,6 @@ const filterModel = new FilterModel();
 const filmsModel = new FilmsModel();
 
 const filmListPresenter = new FilmsList(mainElement, filmsModel, filterModel, api);
-
-const statsComponent = new StatsView(filmsModel);
-render(mainElement, statsComponent, RenderPosition.BEFOREEND);
-statsComponent.hide();
-
 const filtersPresenter = new Filters(mainElement, filterModel, filmsModel, handleSiteMenuClick);
 
 filmListPresenter.init();
